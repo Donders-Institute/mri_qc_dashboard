@@ -4,7 +4,7 @@
 
 cd /project/3055010.02/QualityAssessment_2022/
 source ./venv/bin/activate venv
-sh Raw2Bids.sh
+sh Raw2Bids_Phantom.sh
 cd /project/3055010.02/QualityAssessment_2022/
 python Preprocess_Phantom_T1.py
 python Preprocess_Phantom_fMRI.py
