@@ -18,8 +18,23 @@ default_path = Path('%s/3055010.02/BIDS_data' % ('P:' if os.name == 'nt' else '/
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--port", default='0', required=False, help="port")
 
-scanners = ['Prisma','Prismafit','Skyra']
-qc_types = {'fMRI':'fMRI','short':'Individual coil check'}
+scanners = ['Prisma','Prismafit','Skyra'] # a list of scanner names
+qc_types = {'fMRI':'fMRI','short':'Individual coil check'} # a list of QC types
+# the dictionary of sections defines which plots are created for each QC type
+sections = {'fMRI':
+                [{'name': 'Temporal Signal to Noise Ratio', 'id': 'tSNR'},
+                {'name': 'Ghost to Signal Ratio', 'id': 'GSR', 'ytitle': 'Ghost to Signal Ratio (%)'},
+                {'name': 'Reference Amplitude', 'id': 'ref_amp'},
+                {'name': 'Maximum Displacement', 'id': 'max_displacement', 'ytitle': 'Maximum Displacement (voxels)'}],
+            'short':
+                [{'name': 'Maximum deviation from center of mass median from 5 latest measurements', 'id': 'max_dev',
+                'yaxis': 'maximum center of mass deviation (voxels)'},
+                {'name': 'Maximum deviation from single coil signal proportion from 5 latest measurements',
+                 'id': 'max_prop_dev', 'yaxis': 'maximum signal proportion deviation (%)'}
+                ]
+
+}
+
 args = vars(ap.parse_args())
 port = args['port']
 
@@ -73,7 +88,7 @@ def color_switch(argument):
     }
     return (switcher.get(argument))
 
-
+# these "shapes_lines" and annotations are used for the QC notes in the temporal plot later
 shapes_lines = list()
 annotations = list()
 for index, row in df_events.iterrows():
@@ -108,23 +123,12 @@ for index, row in df_events.iterrows():
     full_df.loc[(full_df['date'] >= row['date_start']) & (full_df['date'] <= row['date_end']) & (
                 full_df['scanner'] == row['scanner']), 'paul_notes'] = row['long_description']
 
-sections = {'fMRI':
-                [{'name': 'Temporal Signal to Noise Ratio', 'id': 'tSNR'},
-                {'name': 'Ghost to Signal Ratio', 'id': 'GSR', 'ytitle': 'Ghost to Signal Ratio (%)'},
-                {'name': 'Reference Amplitude', 'id': 'ref_amp'},
-                {'name': 'Maximum Displacement', 'id': 'max_displacement', 'ytitle': 'Maximum Displacement (voxels)'}],
-            'short':
-                [{'name': 'Maximum deviation from center of mass median from 5 latest measurements', 'id': 'max_dev',
-                'yaxis': 'maximum center of mass deviation (voxels)'},
-                {'name': 'Maximum deviation from single coil signal proportion from 5 latest measurements',
-                 'id': 'max_prop_dev', 'yaxis': 'maximum signal proportion deviation (%)'}
-                ]
-
-}
 
 section_list = [html.Div(id = 'placeholder_for_outputs')]
 
 section_index = -1
+# creates plots for all QC types in a loop
+# for each QC type, there are multiple plots as defined in sections
 for qc_type, qc_type_header in qc_types.items():
     section_list.append(html.H1(qc_type_header))
     print(qc_type)
