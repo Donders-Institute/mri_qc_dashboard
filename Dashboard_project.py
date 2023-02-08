@@ -17,7 +17,7 @@ from project_dashboard_functions import *
 from alive_progress import alive_bar
 from datetime import datetime
 import json
-from project_helpers import find_free_port
+from helpers import find_free_port
 
 # load stylesheets
 app = Dash(use_pages=False,

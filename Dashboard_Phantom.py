@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# This is the main script for the Dash dashboard based on phantom measurements
 
 import webbrowser
 import dash, json
@@ -8,8 +9,10 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output
 import argparse
 from pathlib import Path
-from project_helpers import *
+from helpers import *
 import os
+
+# setting the path
 default_path = Path('%s/3055010.02/BIDS_data' % ('P:' if os.name == 'nt' else '/project'))
 
 ap = argparse.ArgumentParser()
@@ -21,7 +24,9 @@ args = vars(ap.parse_args())
 port = args['port']
 
 df_list = []
+
 def read_file(path_to_data):
+    """ Read the path (absolute or relative to the default path) or throw an error"""
     if Path(path_to_data).exists():
         file_found = True
     elif default_path.joinpath(path_to_data).exists():
@@ -58,6 +63,7 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 df_events['date_start'] = pd.to_datetime(df_events['date_start'], format='%d/%m/%Y')
 df_events['date_end'] = pd.to_datetime(df_events['date_end'], format='%d/%m/%Y')
 
+# choose colors based on the scanner id
 def color_switch(argument):
     switcher = {
         "Skyra": "Blue",
@@ -199,7 +205,6 @@ for qc_type, qc_type_header in qc_types.items():
 
 # App Layout
 app.layout = html.Div(children=section_list)
-
 
 @app.callback(
     Output('placeholder_for_outputs', 'children'),

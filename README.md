@@ -1,5 +1,4 @@
-# mri_qc_dashboard
-MRI QC dashboard
+# MRI QC dashboard
 
 This repository contains the files used (a) for the QC based on the phantom measurements (with 'phantom' in the filenames) and (b) for the project-based QC.
 
@@ -11,4 +10,5 @@ Scripts and their intended use:
 
 - Dashboard_project.py - main entry point for the general QC for all projects
 - project_dashboards_functions.py - functions generating the plots for the projects dashboard
-- project_helpers.py - other helper function for the projects dashboard
+- 
+- helpers.py - helper functions used in both dashboards (currently only one)
